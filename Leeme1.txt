@@ -1,0 +1,23 @@
+¿por qué en un proyecto laravelsail se incluye en el gitignore el fichero .env y los directorios ./Vendor ?
+¿Por qué se ignora el fichero .env?
+Seguridad de credenciales: Contiene datos sensibles como las contraseñas de la base de datos o claves de API. Si se subiera a un repositorio público como GitHub, quedarían expuestas.
+Entornos independientes: El .env define variables que son específicas de tu equipo local (o del contenedor de Docker con Laravel Sail) y no deben coincidir con las de producción.
+Alternativa: En su lugar se sube el .env.example, que es una plantilla sin datos confidenciales para que cada desarrollador cree su propio .env. 
+
+richos.gitbooks.io
+ +3
+¿Por qué se ignora el directorio ./vendor?
+Volumen de datos: La carpeta vendor contiene miles de pequeños archivos de bibliotecas de terceros que ocupan mucho espacio.
+Dependencias dinámicas: En el repositorio solo se mantiene el fichero composer.json, ya que con él cada desarrollador instala la versión correcta de las herramientas para su propio entorno operativo.
+Uso con Sail: Al trabajar con contenedores, las dependencias se generan desde cero al construir la aplicación mediante Composer sin necesidad de mantenerlas en el control de versiones. 
+
+¿Cómo restaurar tu proyecto en otro equipo?
+Si clonas el proyecto desde Git, para que tu entorno vuelva a funcionar ejecuta:
+Crear el entorno: Copia el archivo de ejemplo para crear tu .env personalizado:
+   cp .env.example .env
+Usa el código con precaución.
+Generar el contenedor y dependencias: Levanta el contenedor de Docker ejecutando el comando de Composer:
+   docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/opt" -w /opt laravelsail/php84-composer:latest composer install --ignore-platform-reqs
+Usa el código con precaución.
+Iniciar los servicios de Sail:
+   ./vendor/bin/sail up -d
